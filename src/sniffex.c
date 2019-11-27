@@ -9,6 +9,8 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 
+#define APP_NAME "sniffex"
+
 typedef __u_char    u_char;
 typedef __u_short   u_short;
 
@@ -147,7 +149,7 @@ void print_payload(const char *payload, int len)
 
     if(len <= line_width)
     {
-        printf_hex_ascii_line(ch,len,offset);
+        print_hex_ascii_line(ch,len,offset);
         return;
     }
 
@@ -255,5 +257,69 @@ int main(int argc, char const *argv[])
     bpf_u_int32 mask;
     bpf_u_int32 net;
     int num_packets = 30000;
+
+    if(argc == 2)
+    {
+        dev = argv[1];
+    }
+    else if(argc > 2)
+    {
+        fprintf(stderr,"error:unrecognized command-line options\n\n");
+        print_app_usage();
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        dev = pcap_lookupdev(errbuf);
+        if(dev == NULL)
+        {
+            fprintf(stderr,"Couldn't find default device:%s\n",errbuf);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    if(pcap_lookupnet(dev,&net,&mask,errbuf)==-1)
+    {
+        fprintf(stderr,"Couldn't get netmask for device %s:%s\n",dev,errbuf);
+        net = 0;
+        mask = 0;
+    }
+
+    printf("Device:%s\n",dev);
+    printf("Number of packets:%d\n",num_packets);
+    printf("Filter expression:%s\n",filter_exp);
+
+    handle = pcap_open_live(dev,SNAP_LEN,1,1000,errbuf);
+    if(handle == NULL)
+    {
+        fprintf(stderr,"Couldn't open device %s:%s\n",dev,errbuf);
+        exit(EXIT_FAILURE);
+    }
+
+    if(pcap_datalink(handle) != DLT_EN10MB)
+    {
+        fprintf(stderr,"%s is not an Ethernet\n", dev);
+        exit(EXIT_FAILURE);
+    }
+
+    if(pcap_compile(handle,&fp,filter_exp,0,net)==-1)
+    {
+        fprintf(stderr,"Couldn't parse filter %s:%s\n",filter_exp,pcap_geterr(handle));
+        exit(EXIT_FAILURE);
+    }
+
+    if(pcap_setfilter(handle,&fp) == -1)
+    {
+        fprintf(stderr,"Couldn't install filter %s:%s\n",filter_exp,pcap_geterr(handle));
+        exit(EXIT_FAILURE);
+    }
+
+    pcap_loop(handle,num_packets,got_packet,NULL);
+
+    pcap_freecode(&fp);
+    pcap_close(handle);
+
+    printf("\nCapture complete.\n");
+
     return 0;
 }
