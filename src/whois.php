@@ -1,6 +1,6 @@
 <?php
 class Whois{
-    private $WHOIS_SERVER = arrya(
+    private $WHOIS_SERVER = array(
         "com"=>array("whois.verisign-grs.com","whois.crsnic.net"),
         "net"=>array("whois.verisign-grs.com","whois.crsnic.net"),
         "org"=>array("whois.pir.org","whois.publicinterestegistry.net"),
@@ -84,6 +84,104 @@ class Whois{
         "gs"=>array("whois.adamsnames.tc"),
         "hm"=>array("whois.registry.hm"),
         "hn"=>array("whois2.afilias-grs.net"),
-        "hr"=>array("")
-    )
+        "hr"=>array("whois.ripe.net"),
+        "hu"=>array("whois.ripe.net"),
+        "il"=>array("whois.isoc.org.il"),
+        "int"=>array("whois.isi.edu"),
+        "iq"=>array("vrx.net"),
+        "ir"=>array("whois.nic.ir"),
+        "is"=>array("whois.isnic.is"),
+        "je"=>array("whois.je"),
+        "jp"=>array("whois.jprs.jp"),
+        "kg"=>array("whois.domain.kg"),
+        "kr"=>array("whois.nic.or.kr"),
+        "la"=>array("whois2.afilias-grs.net"),
+        "lt"=>array("whois.domreg.lt"),
+        "lu"=>array("whois.restena.lu"),
+        "lv"=>array("whois.nic.lv"),
+        "ly"=>array("whois.lydomains.com"),
+        "ma"=>array("whois.iam.net.ma"),
+        "mc"=>array("whois.ripe.net"),
+        "md"=>array("whois.nic.md"),
+        "mil"=>array("whois.nic.mil"),
+        "mk"=>array("whois.ripe.net"),
+        "ms"=>array("whois.nic.ms"),
+        "mt"=>array("whois.ripe.net"),
+        "mu"=>array("whois.nic.mu"),
+        "my"=>array("whois.mynic.net.my"),
+        "nf"=>array("whois.nic.cx"),
+        "pl"=>array("whois.dns.pl"),
+        "pr"=>array("whois.nic.pr"),
+        "pt"=>array("whois.dns.pt"),
+        "sa"=>array("saudinic.net.sa"),
+        "sb"=>array("whois.nic.net.sb"),
+        "sg"=>array("whois.nic.net.sg"),
+        "sh"=>array("whois.nic.sh"),
+        "si"=>array("whois.arnes.si"),
+        "sk"=>array("whois.sk-nic.sk"),
+        "sm"=>array("whois.ripe.net"),
+        "st"=>array("whois.nic.st"),
+        "su"=>array("whois.ripe.net"),
+        "tc"=>array("whois.adamsnames.tc"),
+        "tf"=>array("whois.nic.tf"),
+        "th"=>array("whois.thnic.net"),
+        "tj"=>array("whois.nic.tj"),
+        "tk"=>array("whois.nic.tk"),
+        "tl"=>array("whois.domains.tl"),
+        "tm"=>array("whois.nic.tm"),
+        "tn"=>array("whois.ripe.net"),
+        "to"=>array("whois.tonic.to"),
+        "tp"=>array("whois.domains.tl"),
+        "tr"=>array("whois.nic.tr"),
+        "ua"=>array("whois.ripe.net"),
+        "uy"=>array("nic.uy"),
+        "uz"=>array("whois.cctld.uz"),
+        "va"=>array("whois.ripe.net"),
+        "vc"=>array("whois2.afilias-grs.net"),
+        "ve"=>array("whois.nic.ve"),
+        "vg"=>array("whois.adamsnames.tc"),
+        "yu"=>array("whois.ripe.net")
+    );
+
+    public function whoislookup($domain)
+    {
+        $domain = trim($domain);
+        if(substr(strtolower($domain), 0, 7)=="http://")$domain = substr($domain,7);
+        if(substr(strtolower($domain), 0, 4)=="www.")$domain = substr($domain,4);
+        if(preg_match("/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/",$domain))
+            return $this->queryWhois("whois.lacnic.net",$domain);
+        elseif(preg_match("/^([-a-z0-9]{2,100})\.([a-z\.]{2,8})$/i",$domain))
+        {
+            $domain_parts = explode(".",$domain);
+            $tld = strtolower(array_pop($domain_parts));
+            $server = $this->WHOIS_SERVERS[$tld][0];
+            if(!$server){
+                return "Error: No appropriate Whois server found for $domain domain!";
+            }
+            $res = $this->queryWhois($server,$domain);
+            while(preg_match_all("/Whois Server:(.*)/",$res,$matches))
+            {
+                $server = array_pop($matches[1]);
+                $res = $this->queryWhois($server,$domain);
+            }
+            return $res;
+        }
+        else
+            return "Invaild Input";
+    }
+
+    private function queryWhois($server,$domain)
+    {
+        $fp = @fsockopen($server,43,$errno,$errstr,20) or die("Socket Error" .$errno ."-" .$errstr);
+        if($server=="whois.versign-grs.com")
+        $domain="=".$domain;
+        fputs($fp,$domain."\r\n");
+        $out="";
+        while(!feof($fp)){
+            $out .= fgets($fp);
+        }
+        fclose($fp);
+        return $out;
+    }
 }
+?>
