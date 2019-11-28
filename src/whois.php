@@ -84,6 +84,6 @@ class Whois{
         "gs"=>array("whois.adamsnames.tc"),
         "hm"=>array("whois.registry.hm"),
         "hn"=>array("whois2.afilias-grs.net"),
-        "hr"=>array()
+        "hr"=>array("")
     )
 }
