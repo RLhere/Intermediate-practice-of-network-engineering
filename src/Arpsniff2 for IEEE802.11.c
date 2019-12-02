@@ -168,11 +168,38 @@ int main(int argc, char const *argv[])
         {
             fprintf(stderr,"I don't support this interface type!\n");
             exit(1);
-        }
-        
-        
+        }   
     }
     
 
-    return 0;
+    if(pcap_lookupnet(device,&netp,&maskp,errbuf)==-1)
+    {
+        fprintf(stderr,"%s",errbuf);
+        exit(1);
+    }
+
+    if(pcap_compile(handle,&fp,filter,0,maskp)==-1)
+    {
+        fprintf(stderr,"%s",pcap_geterr(handle));
+        exit(1);
+    }
+
+    if(pcap_setfilter(handle,&fp)==-1)
+    {
+        fprintf(stderr,"%s",pcap_geterr(handle));
+        exit(1);
+    }
+
+    pcap_freecode(&fp);
+
+    if((r = pcap_loop(handle,-1,process_packet,NULL))<0)
+    {
+        if(r==-1)
+        {
+            fprintf(stderr,"%s",pcap_geterr(handle));
+            exit(1);
+        }
+    }
+
+    pcap_close(handle);
 }
