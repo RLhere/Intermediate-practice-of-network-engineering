@@ -1,0 +1,1 @@
+gcc -o bin/Connect $(mysql_config --cflags) src/Connect.c $(mysql_config --libs)
