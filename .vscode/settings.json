@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "mysql.h": "c"
+        "mysql.h": "c",
+        "ethernet.h": "c"
     }
 }
