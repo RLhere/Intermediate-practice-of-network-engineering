@@ -4,10 +4,10 @@
 #include<mysql/mysql.h>
 
 static char *host = "localhost";
-static char *user = "unix";
+static char *user = "root";
 
-static char *pass = "TBBZ3F";//need be changed
-static char *dbname = "sys";//need be changed
+static char *pass = "";//need be changed
+static char *dbname = "mysql";//need be changed
 
 
 unsigned int port = 3306;
@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
     {
         fprintf(stderr, "\nError: %s [%d]\n",mysql_error(conn),mysql_errno(conn));
         exit(1);
-    }
+	}
 
     mysql_query(conn, "SELECT * FROM users");
 

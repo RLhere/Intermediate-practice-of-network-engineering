@@ -49,7 +49,7 @@ class Whois{
         "af"=>array("whois.nic.af"),
         "ag"=>array("whois.nic.ag"),
         "al"=>array("whois.ripe.net"),
-        "am"=>array("whois.amnic.net").
+        "am"=>array("whois.amnic.net"),
         "as"=>array("whois.nic.as"),
         "az"=>array("whois.ripe.net"),
         "ba"=>array("whois.ripe.net"),
