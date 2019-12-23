@@ -4,10 +4,10 @@
 #include<mysql/mysql.h>
 
 static char *host = "localhost";
-static char *user = "root";
+static char *user = "Newuser";
 
-static char *pass = "";//need be changed
-static char *dbname = "mysql";//need be changed
+static char *pass = "123456";//need be changed
+static char *dbname = "information_schema";//need be changed
 
 
 unsigned int port = 3306;

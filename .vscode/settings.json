@@ -2,6 +2,15 @@
     "files.associations": {
         "mysql.h": "c",
         "ethernet.h": "c",
-        "getopt_core.h": "c"
+        "getopt_core.h": "c",
+        "pcap.h": "c",
+        "stdint.h": "c",
+        "unistd.h": "c",
+        "stdio.h": "c",
+        "if_ether.h": "c",
+        "if.h": "c",
+        "signal.h": "c",
+        "stdlib.h": "c",
+        "string.h": "c"
     }
 }
